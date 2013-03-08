@@ -10,6 +10,16 @@ And to maximize the expected deviation of who plays on what teams
 
 ## Dependencies
 
+  * [node.js](http://nodejs.org/)
+
+## Installation
+
+  * `npm install`
+
+## Running
+
+  * `npm start`
+
 [this thread]: http://www.tacticalgamer.com/natural-selection-general-discussion/191679-sv_balance-creates-mis-numbered-teams.html
 [TacticalGamer.com]: http://tacticalgamer.com
 [Natural Selection 2]: http://unknownworlds.com/ns2/
