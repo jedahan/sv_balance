@@ -1,0 +1,19 @@
+{ "name": "sv_balance"
+, "version": "0.0.1"
+, "description": "testing simple balance algorithms"
+, "author": "Jonathan Dahan <jonathan@jedahan.com>"
+, "dependencies":
+  { "coffee-script": "1.6.x"
+  }
+, "engines": {
+    "node": "0.8.x",
+    "npm":  "1.2.x"
+  }
+, "scripts":
+  { "start": "coffee sv_balance"
+  }
+, "repository" :
+  { "type" : "git"
+  , "url" : "http://github.com/jedahan/sv_balance.git"
+  }
+}
