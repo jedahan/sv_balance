@@ -9,15 +9,15 @@ The goals are to minimize the standard deviation of expected team winrate
 And to maximize the expected deviation of who plays on what teams
  (create varied teams)
 
-## Dependencies
+#### Dependencies
 
   * [node.js](http://nodejs.org/)
 
-## Installation
+#### Installation
 
   * `npm install`
 
-## Running
+#### Running
 
   * `npm start`
 
