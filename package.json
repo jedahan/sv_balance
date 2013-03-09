@@ -10,7 +10,7 @@
     "npm":  "1.2.x"
   }
 , "scripts":
-  { "start": "coffee sv_balance"
+  { "start": "coffee sv_balance.coffee"
   }
 , "repository" :
   { "type" : "git"
