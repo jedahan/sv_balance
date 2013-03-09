@@ -1,8 +1,3 @@
-fs = require 'fs'
-async = require 'async'
-Bagpipe = require 'bagpipe'
-bagpipe = new Bagpipe 100  # this is a limit of how many files we can open at once
-
 class Team
   constructor: (@name, @players) ->
   
@@ -26,7 +21,45 @@ class Team
   pushPlayer: (player) ->
     @players.push player
 
-sv_balance = (cb) ->
+strategies = 
+  random: (readyroom, cb) ->
+    alien = new Team "alien", []
+    marine = new Team "marine", []  
+
+    while random_player = readyroom.popPlayer()
+      if alien.players.length < marine.players.length
+        team = alien
+      else
+        team = marine
+      team.pushPlayer random_player
+
+    cb null, {alien, marine}
+
+  ###
+    generate random teams
+    randomly swap stronger players from the stronger team with weaker players from the weaker team
+    until the weaker team is now the stronger team
+  ###
+  weirdo_strategy: (players, cb) ->
+    cb new Error "unimplemented strategy"
+
+  ###
+    generate random teams
+    randomly swap stronger players from the stronger team with weaker players from the weaker team
+    until the expected win difference is within 5%
+  ###
+  swap_until_within_bounds_strategy: (players, cb) ->
+    cb new Error "unimplemented strategy"
+  
+  ###
+    generate random teams
+    randomly swap players
+    until the expected win difference is within 5%
+  ###
+  zombie_strategy: (players, cb) ->
+    cb new Error "unimplemented strategy"
+
+sv_balance = (strategy, cb) ->
   server = [
     {micro: 0.56}
     {donat: 0.66}
@@ -38,7 +71,7 @@ sv_balance = (cb) ->
     {montyp: 0.66}
     {THE_GODDAMN_BATMAN: 0.44}
     {NSPlayer: 0.32}
-    {frito_bandito: 0.2}
+    {frito_bandito: 0.20}
     {phil: 0.00}
     {chuck_norris: 0.99}
     {red_baron: 0.36}
@@ -46,35 +79,29 @@ sv_balance = (cb) ->
     {violentsquirrel: 0.70}
   ]
   readyroom = new Team "readyroom", server 
-  alien = new Team "alien", []
-  marine = new Team "marine", []
 
-  while random_player = readyroom.popPlayer()
-    if alien.players.length < marine.players.length
-      team = alien
-    else
-      team = marine
-    team.pushPlayer random_player
+  strategy readyroom, (err, teams) ->
+    cb err, teams
 
-  cb null, { marine: marine.players, alien: alien.players }
-
-simulate = (simulations = 0) ->
+simulate = (strategy, simulations = 0) ->
+  allgames = []
   simulation = 0
-  done = 0
   while simulation++ < simulations
-    sv_balance (err, teams) ->
-      bagpipe.push fs.writeFile, "simulations/#{simulation}.json", JSON.stringify(teams,1) , (err) ->
-        throw err if err
-        done++
-        console.log "#{done} simulations"
-        if done is simulations
-          console.log "Finished #{done} simulations"
+    sv_balance strategy, (err, teams) ->
+      unless err
+        allgames.push teams
+        if allgames.length is simulations
+          reduce allgames
 
-reduce = (cb) ->
-  simulations = []
-  fs.readdir "simulations", (err, files) ->
-    for file in files
-      fs.open file, 'r', (err, game) ->
-        simulations.push JSON.parse game
+reduce = (games) ->
+  skill_differences = (Math.abs(game.alien.score() - game.marine.score()) for game in games)
+  mean = skill_differences.reduce((x,y)->x+y)/skill_differences.length
+  variance = (Math.pow((skill_difference - mean),2) for skill_difference in skill_differences)
+  deviation = variance.reduce((x,y)->x+y)/skill_differences.length
+  console.log "After #{games.length} simulations\n
+    the expected win rate difference is #{Math.round(mean*1000)/10} ± #{Math.round(deviation*1000)/10}%\n
+  "
 
-simulate 1000
+for name,strategy of strategies
+  console.log "trying strategy #{name}"
+  simulate strategy, 10000
