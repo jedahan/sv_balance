@@ -1,4 +1,7 @@
 fs = require 'fs'
+async = require 'async'
+Bagpipe = require 'bagpipe'
+bagpipe = new Bagpipe 100  # this is a limit of how many files we can open at once
 
 class Team
   constructor: (@name, @players) ->
@@ -55,15 +58,23 @@ sv_balance = (cb) ->
 
   cb null, { marine: marine.players, alien: alien.players }
 
-simulate = (times = 0) ->
-  i = 0
-  while i++ < times
+simulate = (simulations = 0) ->
+  simulation = 0
+  done = 0
+  while simulation++ < simulations
     sv_balance (err, teams) ->
-      console.log teams
-      fs.writeFile "simulations/#{times}.json", JSON.stringify(teams,1) , (err) ->
+      bagpipe.push fs.writeFile, "simulations/#{simulation}.json", JSON.stringify(teams,1) , (err) ->
         throw err if err
+        done++
+        console.log "#{done} simulations"
+        if done is simulations
+          console.log "Finished #{done} simulations"
 
-calculate = ->
-  console.log 'heya'
+reduce = (cb) ->
+  simulations = []
+  fs.readdir "simulations", (err, files) ->
+    for file in files
+      fs.open file, 'r', (err, game) ->
+        simulations.push JSON.parse game
 
-simulate 1
+simulate 1000

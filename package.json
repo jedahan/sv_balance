@@ -3,7 +3,9 @@
 , "description": "testing simple balance algorithms"
 , "author": "Jonathan Dahan <jonathan@jedahan.com>"
 , "dependencies":
-  { "coffee-script": "1.6.x"
+  { "async": "0.2.x"
+  , "bagpipe": "0.2.x"
+  , "coffee-script": "1.6.x"
   }
 , "engines": {
     "node": "0.8.x",
