@@ -172,12 +172,11 @@ reduce = (games) ->
   deviation = skill_variance.reduce((x,y)->x+y)/skill_differences.length
 
   common_elements = (arr1, arr2, count=0) ->
-    for el1,i in arr1
-      for el2,j in arr2
-        if el1 is el2
+    for el in arr1
+      for el2 in arr2
+        if el.name is el2.name
           count++
-        if i is arr1.length-1 and j is arr2.length-1
-          return count
+    return count
 
   randomness = (common_elements(game.alien.players,games[(index+1)%games.length].marine.players)/game.alien.players.length for game,index in games)
   randomness_mean = randomness.reduce((x,y)->x+y)/randomness.length
