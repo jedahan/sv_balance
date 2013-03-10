@@ -21,7 +21,7 @@ class Team
     @players.push player
 
 strategies = 
-  random: (readyroom, cb) ->
+  sv_random: (readyroom, cb) ->
     alien = new Team "alien", []
     marine = new Team "marine", []  
 
@@ -39,7 +39,7 @@ strategies =
     randomly swap stronger players from the stronger team with weaker players from the weaker team
     until the weaker team is now the stronger team
   ###
-  weirdo_strategy: (readyroom, cb) ->
+  swap_until_balance_shifts: (readyroom, cb) ->
     alien = new Team "alien", []
     marine = new Team "marine", []  
 
@@ -77,7 +77,7 @@ strategies =
     randomly swap stronger players from the stronger team with weaker players from the weaker team
     until the expected win difference is within 5%
   ###
-  swap_until_within_bounds_strategy: (readyroom, cb) ->
+  swap_until_within_bounds: (readyroom, cb) ->
     alien = new Team "alien", []
     marine = new Team "marine", []  
 
@@ -110,7 +110,7 @@ strategies =
   ###
     generate random teams until the expected win difference is within 5%
   ###
-  zombie_strategy: (readyroom, cb) ->
+  sv_random_until_within_bounds: (readyroom, cb) ->
     alien = new Team "alien", []
     marine = new Team "marine", []  
 
