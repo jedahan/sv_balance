@@ -1,8 +1,11 @@
 Array::clone = ->
   cloned = []
-  for i in this
-    cloned.push i
+  cloned.push i for i in this
   cloned
+
+Array::mean = -> @reduce((x,y)->x+y)/@length
+Array::variance = -> Math.pow((el - @mean()),2) for el in this
+Array::deviation = -> @variance().reduce((x,y)->x+y)/@length
 
 class Team
   constructor: (@name, @players) ->
@@ -165,11 +168,7 @@ simulate = (strategy, simulations = 0) ->
           reduce allgames
 
 reduce = (games) ->
-  skill_differences = (Math.abs(game.alien.score() - game.marine.score()) for game in games)
-  
-  mean = skill_differences.reduce((x,y)->x+y)/skill_differences.length
-  skill_variance = (Math.pow((skill_difference - mean),2) for skill_difference in skill_differences)
-  deviation = skill_variance.reduce((x,y)->x+y)/skill_differences.length
+  winrates = (Math.abs(game.alien.score() - game.marine.score()) for game in games)
 
   common_elements = (arr1, arr2, count=0) ->
     for el in arr1
@@ -179,13 +178,10 @@ reduce = (games) ->
     return count
 
   randomness = (common_elements(game.alien.players,games[(index+1)%games.length].marine.players)/game.alien.players.length for game,index in games)
-  randomness_mean = randomness.reduce((x,y)->x+y)/randomness.length
-  randomness_variance = (Math.pow((randomness_difference - randomness_mean),2) for randomness_difference in randomness)
-  randomness_deviation = randomness_variance.reduce((x,y)->x+y)/randomness.length
 
   console.log "After #{games.length} simulations\n
-    the expected win rate difference is #{Math.round(mean*1000)/10} ± #{Math.round(deviation*1000)/10}%\n
-    the randomness is #{Math.round(randomness_mean*1000)/10} ± #{Math.round(randomness_deviation*1000)/10}%\n
+    the expected win rate difference is #{Math.round(winrates.mean()*1000)/10} ± #{Math.round(winrates.deviation()*1000)/10}%\n
+    the randomness is #{Math.round(randomness.mean()*1000)/10} ± #{Math.round(randomness.deviation()*1000)/10}%\n
   "
 
 for name,strategy of strategies
