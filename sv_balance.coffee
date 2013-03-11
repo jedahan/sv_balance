@@ -17,16 +17,19 @@ class Team
   score: ->
     total_score = 0
     total_score += player.score for player in @players
-    total_score / @players.length
+    total_score / (@players.length or 1)
 
   popPlayer: ->
-    return if @players.length is 0
+    return null if @players.length is 0
     @players.splice(Math.floor(Math.random() * @players.length),1)[0]
 
   pushPlayer: (player) ->
     @players.push player
 
-strategies = 
+strategies =
+  ###
+    generate random teams
+  ###
   sv_random: (readyroom, cb) ->
     alien = new Team "alien", []
     marine = new Team "marine", []  
@@ -89,10 +92,9 @@ strategies =
 
     while random_player = readyroom.popPlayer()
       if alien.players.length < marine.players.length
-        team = alien
+        alien.pushPlayer random_player
       else
-        team = marine
-      team.pushPlayer random_player
+        marine.pushPlayer random_player
 
     while Math.abs(alien.score() - marine.score()) > 0.05
       stronger = if marine.score() > alien.score() then marine else alien
@@ -117,25 +119,19 @@ strategies =
     generate random teams until the expected win difference is within 5%
   ###
   sv_random_until_within_bounds: (readyroom, cb) ->
-    alien = new Team "alien", []
-    marine = new Team "marine", []  
+    alien = marine = null
+    while not alien or alien?.score() is 0 or Math.abs(alien.score() - marine.score()) > 0.05
+      alien = new Team "alien", []
+      marine = new Team "marine", []
+      players = new Team "readyroom", readyroom.players.clone()
 
-    while random_player = readyroom.popPlayer()
-      if alien.players.length < marine.players.length
-        team = alien
-      else
-        team = marine
-      team.pushPlayer random_player
-      if readyroom.players.length is 0
-        cb null, {alien, marine}
-###
-    while Math.abs(alien.score() - marine.score()) > 0.05
-      while alien.players.length
-        readyroom.pushPlayer alien.players[0]
-      while marine.players.length
-        readyroom.pushPlayer marine.players[0]
-      until alien.players.length is marine.players.length is 0
-###
+      until (random_player = players.popPlayer()) is null
+        if alien.players.length < marine.players.length
+          alien.pushPlayer random_player
+        else
+          marine.pushPlayer random_player
+
+    cb null, {alien, marine}
 
 sv_balance = (strategy, cb) ->
   readyroom = new Team "readyroom", [
@@ -196,4 +192,4 @@ reduce = (games) ->
 
 for name,strategy of strategies
   console.log "trying strategy #{name}"
-  simulate strategy, 10000
+  simulate strategy, 1000
