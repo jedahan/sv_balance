@@ -1,5 +1,11 @@
 async = require 'async'
 
+Array::clone = ->
+  cloned = []
+  for i in this
+    cloned.push i
+  cloned
+
 class Team
   constructor: (@name, @players) ->
   
