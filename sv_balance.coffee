@@ -1,5 +1,3 @@
-async = require 'async'
-
 Array::clone = ->
   cloned = []
   for i in this

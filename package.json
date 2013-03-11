@@ -1,11 +1,9 @@
 { "name": "sv_balance"
-, "version": "0.0.1"
+, "version": "0.0.2"
 , "description": "testing simple balance algorithms"
 , "author": "Jonathan Dahan <jonathan@jedahan.com>"
 , "dependencies":
-  { "async": "0.2.x"
-  , "bagpipe": "0.2.x"
-  , "coffee-script": "1.6.x"
+  { "coffee-script": "1.6.x"
   }
 , "engines": {
     "node": "0.8.x",
